@@ -5,6 +5,7 @@ file. File structured according to <http://keepachangelog.com/>
 
 ## Unreleased
 ### Added
+- Configurable search document
 - Usage instructions
 ### Changed
 - Building instructions

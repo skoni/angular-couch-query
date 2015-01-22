@@ -3,9 +3,13 @@
 angular
   .module('eHealth.couchQuery.services')
   .provider('luceneQueryFactory', function () {
-    var db;
+    var db,
+        searchDocument;
     this.setDb = function(newDb) {
       db = newDb;
+    };
+    this.setSearchDocument = function(newSearchDocument) {
+      searchDocument = newSearchDocument;
     };
     this.$get = ['$http', 'requestPaginatorFactory', 'foldToAscii', function($http, requestPaginatorFactory, foldToAscii) {
       function create(options) {
@@ -132,7 +136,7 @@ angular
               return requestPaginatorFactory(function(params) {
                 config.params = params;
                 return $http
-                  .get(db+'/_fti/_design/search-version:0.1.1/all', config)
+                  .get(db+'/_fti/_design/'+searchDocument, config)
                   .then(function(response) {
                     return response.data;
                   });

@@ -7,6 +7,7 @@ describe('Service: luceneQueryFactory', function () {
 
   beforeEach(module(function(luceneQueryFactoryProvider) {
     luceneQueryFactoryProvider.setDb('https://dev.couchdb.ebola.eocng.org/sl_call_centre');
+    luceneQueryFactoryProvider.setSearchDocument('search-version:0.1.1/all');
   }));
 
   // instantiate service
