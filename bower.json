@@ -1,0 +1,27 @@
+{
+  "name": "angular-couch-query",
+  "version": "0.0.0",
+  "authors": [
+    {
+      "name": "Francesco Occhipinti",
+      "email": "f.occhipinti@gmail.com"
+    }
+  ],
+  "main": [
+    "dist/angular-couch-query.js"
+  ],
+  "ignore": [
+    "src",
+    "test",
+    "Gruntfile.js",
+    "**/.*"
+  ],
+  "dependencies": {
+    "angular": "~1.2.21",
+    "fold-to-ascii-js": "https://github.com/mplatt/fold-to-ascii-js.git#1.1"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.2.21",
+    "angular-scenario": "~1.2.21"
+  }
+}
