@@ -16,7 +16,7 @@ dashboard
 
     $ npm install
     $ bower install
-    $ grunt
+    $ npm test
 
 ##### Repo structure
 
