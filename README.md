@@ -16,7 +16,7 @@ dashboard
 
     $ npm install
     $ bower install
-    $ npm test
+    $ grunt
 
 ## How to do a new release
 
