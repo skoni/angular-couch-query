@@ -18,7 +18,8 @@
   ],
   "dependencies": {
     "angular": "~1.2.21",
-    "fold-to-ascii-js": "https://github.com/mplatt/fold-to-ascii-js.git#1.1"
+    "fold-to-ascii-js": "https://github.com/mplatt/fold-to-ascii-js.git#1.1",
+    "ng-lodash": "~0.1.0"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.21",
