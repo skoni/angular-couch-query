@@ -85,6 +85,12 @@ module.exports = function (grunt) {
         configFile: 'karma-unit.conf.js',
         singleRun: true
       }
+    },
+    bump: {
+      options: {
+        files: ['package.json', 'bower.json'],
+        tagName: '%VERSION%'
+      }
     }
   });
 
@@ -94,6 +100,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-remove-usestrict');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-bump');
 
   grunt.registerTask('default', [
     'jshint:beforeConcat',

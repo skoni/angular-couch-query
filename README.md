@@ -1,4 +1,5 @@
 # Angular Couch Query
+[![Build Status](https://travis-ci.org/eHealthAfrica/angular-couch-query.svg?branch=0.0.0)](https://travis-ci.org/eHealthAfrica/angular-couch-query)
 > Navigate results of Couch views and Lucene queries easily
 
 This module requires [ngLodash](https://github.com/rockabox/ng-lodash)
@@ -15,7 +16,7 @@ dashboard
 
     $ npm install
     $ bower install
-    $ grunt
+    $ npm test
 
 ##### Repo structure
 
