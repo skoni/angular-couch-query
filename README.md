@@ -6,6 +6,19 @@ This module requires [ngLodash](https://github.com/rockabox/ng-lodash)
 as a dependency, thus please add it to your app following its
 documentation, before adding this one
 
+## Installation
+
+Add this to your angular app with bower, for instance:
+
+    $ bower install --save eHealthAfrica/angular-couch-query#0.0.3
+
+Then add the module `eHealth.couchQuery` as a dependency to your app module.
+
+The database needs to be set in the configuration phase of your app
+for the Lucene query service to work. Check [the
+tests](https://github.com/eHealthAfrica/angular-couch-query/blob/0a4c2777c30c328b5ed9f50e72fa1d3cc3f0aea1/test/unit/eHealth.couchQuery/services/lucene-query-factory.js#L9)
+for an example.
+
 ## Origins
 
 These few services were extracted from the Ebola call centre, because

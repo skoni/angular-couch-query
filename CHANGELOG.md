@@ -4,8 +4,10 @@ All notable changes to this project will be documented in this
 file. File structured according to <http://keepachangelog.com/>
 
 ## Unreleased
+### Added
+- Usage instructions
 ### Changed
-- Updated the doc
+- Building instructions
 
 ## 0.0.3 - 22-01-15
 ### Fixed
