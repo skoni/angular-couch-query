@@ -18,6 +18,13 @@ dashboard
     $ bower install
     $ npm test
 
+## How to do a new release
+
+- update the change log adding a release number and a release date
+- use `grunt bump` with a version level matching the changes in the change log
+
+The change log will be committed automatically by `grunt bump`
+
 ##### Repo structure
 
 The structure comes from bootstrapping with
