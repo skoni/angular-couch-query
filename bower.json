@@ -8,7 +8,7 @@
     }
   ],
   "main": [
-    "dist/angular-couch-query.js"
+    "dist/ehealth-couch-query.min.js"
   ],
   "ignore": [
     "src",
