@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this
 file. File structured according to <http://keepachangelog.com/>
 
+## Unreleased
+### Fixed
+- Move build dependencies to the rigt section in the Bower file
+
 ## 0.1.0 - 22-01-15
 ### Added
 - Configurable search document
