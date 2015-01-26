@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this
 file. File structured according to <http://keepachangelog.com/>
 
+## 0.2.0 - 26-01-15
+### Added
+- `pageSize` option for the request paginator factory
+
 ## 0.1.1 - 23-01-15
 ### Fixed
 - Move build dependencies to the rigt section in the Bower file
