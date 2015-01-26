@@ -24,6 +24,16 @@ describe('Service: requestPaginatorFactory', function () {
     }, 40, 20, {}, null, {});
     expect(res).toBeDefined();
   });
+  it('uses the default page size', function(){
+    var query = jasmine.createSpy().andReturn($q.when());
+    requestPaginatorFactory(query);
+    expect(query).toHaveBeenCalledWith({ limit : 20, skip : 0 });
+  });
+  it('can use a custom page size', function(){
+    var query = jasmine.createSpy().andReturn($q.when());
+    requestPaginatorFactory(query, {}, { pageSize:40 });
+    expect(query).toHaveBeenCalledWith({ limit : 40, skip : 0 });
+  });
   describe('with duplicate results', function(){
     beforeEach(function() {
       function query() {

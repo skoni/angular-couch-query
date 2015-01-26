@@ -2276,7 +2276,7 @@ angular
         params = params || {};
         options = options || {};
         var page = 0,
-            size = viewPageSize,
+            size = options.pageSize || viewPageSize,
             transform;
         params = angular.copy(params);
         var result = {
