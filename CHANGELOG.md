@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this
 file. File structured according to <http://keepachangelog.com/>
 
+## Unreleased
+### Added
+- `parameters` and `setParameter` methods to the result object
+
 ## 0.2.0 - 26-01-15
 ### Added
 - `pageSize` option for the request paginator factory

@@ -74,6 +74,18 @@ angular
             page = 0;
             return result.update();
           },
+          parameters: function(newParams) {
+            if (newParams) {
+              params = newParams;
+              return result.update();
+            } else {
+              return angular.copy(params);
+            }
+          },
+          setParameter: function(key, value) {
+            params[key] = value;
+            return result.update();
+          },
           transform: function(f) {
             transform = f;
             result.rows = result.rows.map(f);

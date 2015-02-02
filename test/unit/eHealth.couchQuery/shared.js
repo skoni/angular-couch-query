@@ -10,6 +10,11 @@ function paginatedResultInterface(context) {
     it('has not previous page at the beginning', function() {
       expect(result.hasPrevious).toBe(false);
     });
+    it('allows to get parameters', function() {
+      var params = result.parameters();
+      expect(params.limit).toBe(20);
+      expect(params.skip).toBe(0);
+    });
     describe('the expected property', function() {
       [
         'rows',
@@ -32,6 +37,33 @@ function paginatedResultInterface(context) {
       });
       it('starts again from the beginning', function(){
         expect(result.firstIndex).toBe(0);
+      });
+    });
+    describe('on parameters set', function() {
+      beforeEach(function() {
+        spyOn(result, 'update').andCallThrough();
+        result.parameters({ descending:true });
+      });
+      it('saves the new parameters', function() {
+        expect(result.parameters().descending).toBe(true);
+      });
+      it('triggers an update', function() {
+        expect(result.update).toHaveBeenCalled();
+      });
+    });
+    describe('on parameters set with a direct interface', function() {
+      beforeEach(function() {
+        spyOn(result, 'update').andCallThrough();
+        result.setParameter('descending', true);
+      });
+      it('saves the new parameters', function() {
+        expect(result.parameters().descending).toBe(true);
+      });
+      it('keeps the old parameters', function() {
+        expect(result.parameters().skip).toBe(0);
+      });
+      it('triggers an update', function() {
+        expect(result.update).toHaveBeenCalled();
       });
     });
   });
