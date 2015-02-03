@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this
 file. File structured according to <http://keepachangelog.com/>
 
-## Unreleased
+## 0.3.1 - 03-02-15
 ### Fixed
 - a bug with the calculation of the `result.hasNext` value
 
