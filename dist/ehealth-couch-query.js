@@ -2260,16 +2260,9 @@ angular
         result.rows = rows.map(transform);
         result.totalRows = response.total_rows;
         result.firstIndex = skip;
-        result.lastIndex = result.firstIndex + size - 1;
-        result.hasPrevious = false;
-        result.hasNext = true;
-        if (result.rows.length < size) {
-          result.lastIndex = result.firstIndex + result.rows.length - 1;
-          result.hasNext = false;
-        }
-        if (skip > 0) {
-          result.hasPrevious = true;
-        }
+        result.lastIndex = result.firstIndex + result.rows.length - 1;
+        result.hasPrevious = (skip > 0);
+        result.hasNext = ((skip + result.rows.length) < result.totalRows);
         return result;
       }
       function requestPaginatorFactory(query, params, options) {

@@ -12,7 +12,7 @@ function paginatedResultInterface(context) {
     });
     it('allows to get parameters', function() {
       var params = result.parameters();
-      expect(params.limit).toBe(20);
+      expect(params.limit).toEqual(jasmine.any(Number));
       expect(params.skip).toBe(0);
     });
     describe('the expected property', function() {

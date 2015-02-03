@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this
 file. File structured according to <http://keepachangelog.com/>
 
+## Unreleased
+### Fixed
+- a bug with the calculation of the `result.hasNext` value
+
 ## 0.3.0 - 02-02-15
 ### Added
 - `parameters` and `setParameter` methods to the result object

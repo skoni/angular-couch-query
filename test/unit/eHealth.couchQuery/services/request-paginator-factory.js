@@ -86,5 +86,104 @@ describe('Service: requestPaginatorFactory', function () {
       })
       expect(result.rows[0].a).toBe('b');
     });
+    it('does not have a next page', function() {
+      expect(result.hasNext).toBeFalsy();
+    });
+  });
+  describe('a result object with page size 2', function() {
+    var def;
+    beforeEach(function() {
+      def = $q.defer();
+      function query() {
+        return def.promise;
+      }
+      requestPaginatorFactory(query, {}, {
+        pageSize: 2
+      })
+        .then(function(_result_) {
+          result = _result_;
+          context.result = _result_;
+        });
+    });
+    describe('with 2 results', function() {
+      beforeEach(function() {
+        def.resolve({
+          total_rows: 2,
+          rows: [{
+            'a': 'a'
+          }, {
+            'a': 'a'
+          }]
+        });
+        $rootScope.$digest();
+      });
+      it('does not have a next page', function(){
+        expect(result.hasNext).toBeFalsy();
+      });
+    });
+    describe('with 1 result', function() {
+      beforeEach(function() {
+        def.resolve({
+          total_rows: 1,
+          rows: [{
+            'a': 'a'
+          }]
+        });
+        $rootScope.$digest();
+      });
+      it('does not have a next page', function(){
+        expect(result.hasNext).toBeFalsy();
+      });
+    });
+    describe('with 3 results', function() {
+      beforeEach(function() {
+        def.resolve({
+          total_rows: 3,
+          rows: [{
+            'a': 'a'
+          }, {
+            'a': 'a'
+          }]
+        });
+        $rootScope.$digest();
+      });
+      it('has a next page', function(){
+        expect(result.hasNext).toBeTruthy();
+      });
+    });
+    describe('with 4 results', function() {
+      beforeEach(function() {
+        def.resolve({
+          total_rows: 4,
+          rows: [{
+            'a': 'a'
+          }, {
+            'a': 'a'
+          }]
+        });
+        $rootScope.$digest();
+      });
+      it('has a next page', function(){
+        expect(result.hasNext).toBeTruthy();
+      });
+      describe('when asking for the second page', function() {
+        beforeEach(function() {
+          def = $q.defer();
+          def.resolve({
+            total_rows: 4,
+            rows: [{
+              'a': 'a'
+            }, {
+              'a': 'a'
+            }]
+          });
+        });
+        it('does not have a next page', function() {
+          result.next();
+          $rootScope.$digest();
+          expect(result.hasNext).toBeFalsy();
+        });
+      });
+    });
   });
 });
