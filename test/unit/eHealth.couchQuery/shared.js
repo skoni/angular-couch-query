@@ -15,6 +15,33 @@ function paginatedResultInterface(context) {
       expect(params.limit).toEqual(jasmine.any(Number));
       expect(params.skip).toBe(0);
     });
+    it('just sets descending when no keys are given', function(){
+      result.setDescending(true);
+      expect(result.parameters().startkey).toBeUndefined();
+      expect(result.parameters().endkey).toBeUndefined();
+    });
+    it('flips existing keys when changing descending', function(){
+      result.parameters({
+        startkey: 'start',
+        endkey: 'end'
+      });
+      result.setDescending(true);
+      expect(result.parameters()).toEqual({
+        startkey: 'end',
+        endkey: 'start',
+        descending: true,
+        limit : 20,
+        skip : 0
+      });
+      result.setDescending(false);
+      expect(result.parameters()).toEqual({
+        startkey: 'start',
+        endkey: 'end',
+        descending: false,
+        limit : 20,
+        skip : 0
+      });
+    });
     describe('the expected property', function() {
       [
         'rows',
@@ -63,7 +90,7 @@ function paginatedResultInterface(context) {
         expect(result.parameters().skip).toBe(0);
       });
       it('triggers an update', function() {
-        expect(result.update).toHaveBeenCalled();
+        expect(result.update).toHaveBeenCalledWith();
       });
     });
   });
