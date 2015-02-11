@@ -7,7 +7,7 @@ angular
     this.setPageSize = function(newViewPageSize) {
       viewPageSize = newViewPageSize;
     };
-    this.$get = ['lodash', function(lodash) {
+    this.$get = ['lodash', '$q', function(lodash, $q) {
       function updateResult(response, skip, size, result, transform, options) {
         transform = transform || function (i) { return i; }; // identity
         var rows;
@@ -78,6 +78,23 @@ angular
           setParameter: function(key, value) {
             params[key] = value;
             return result.update();
+          },
+          setDescending: function(value) {
+            var prev = params.descending;
+            params.descending = value;
+            if (value == prev) {
+              return $q.when(result);
+            } else {
+              var start = params.startkey,
+                  end   = params.endkey;
+              if(start) {
+                params.endkey = start;
+              }
+              if (end) {
+                params.startkey = end;
+              }
+              return result.update();
+            }
           },
           transform: function(f) {
             transform = f;
