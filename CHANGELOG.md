@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this
 file. File structured according to <http://keepachangelog.com/>
 
+## 0.5.0 - 26-02-15
+- substitute searchFieldMultiple with searchField passing an array as second argument
+- allow to create `EitherOr` queries with multiple values
+
 ## 0.4.0 - 11-02-15
 - add `setDescending` method to the result object
 

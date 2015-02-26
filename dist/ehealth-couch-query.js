@@ -2110,7 +2110,7 @@ angular
             fields[key] = {
               value: value
             };
-            if (value === undefined) {
+            if (value === undefined || (angular.isArray(value) && !value.length)) {
               delete fields[key];
             }
             return query;
@@ -2130,23 +2130,11 @@ angular
             function isNotValue(candidate) { return candidate !== value; }
             if (key in fineGrainFields) {
               fields[key] = {
-                type: 'multiple',
                 value: fineGrainFields[key].filter(isNotValue)
               };
             } else {
               query.searchField(key, value);
               fields[key].type = 'not';
-            }
-            return query;
-          },
-          searchFieldMultiple: function(key, value) {
-            if (value.length) {
-              fields[key] = {
-                type: 'multiple',
-                value: value
-              };
-            } else {
-              delete fields[key];
             }
             return query;
           },
@@ -2166,14 +2154,12 @@ angular
             var terms = Object.keys(fields).map(function (key) {
               function addLabel(key, value) {
                 value = value || fields[key].value;
-                return key+':'+foldToAscii(value);
+                var queryValue = angular.isArray(value) ?
+                  '(' + value.map(foldToAscii).join(' OR ') + ')' :
+                  foldToAscii(value);
+                return key+':'+queryValue;
               }
-              if (fields[key].type === 'multiple') {
-                var joined = fields[key].value
-                      .map(foldToAscii)
-                      .join(' OR ');
-                return key+':('+joined+')';
-              } else if (fields[key].type === 'not') {
+              if (fields[key].type === 'not') {
                 return 'NOT '+addLabel(key);
               } else if (fields[key].type === 'eitherOr') {
                 var labeled = Object.keys(fields[key].value).map(function(k) {
