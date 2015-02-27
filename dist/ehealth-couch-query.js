@@ -2175,8 +2175,9 @@ angular
             }
             return terms.join(' AND ');
           },
-          run: function(initialParams){
+          run: function(initialParams, initialOptions){
             initialParams = initialParams || {};
+            initialOptions = initialOptions || {};
             var q = query.getSearchExpression();
             angular.extend(initialParams, {
               include_docs: true
@@ -2192,9 +2193,12 @@ angular
                   .then(function(response) {
                     return response.data;
                   });
-              }, initialParams);
+              }, initialParams, initialOptions);
             } else {
               initialParams.q = q;
+              initialOptions = angular.extend({
+                unique: true
+              }, initialOptions);
               // when a new index is being calculated by couch-lucene,
               // all other indexes are blocked and return 500! accepting
               // stale results allows the application to work
@@ -2216,7 +2220,7 @@ angular
                   .then(function(response) {
                     return response.data;
                   });
-              }, initialParams, {unique:true});
+              }, initialParams, initialOptions);
             }
           }
         };
