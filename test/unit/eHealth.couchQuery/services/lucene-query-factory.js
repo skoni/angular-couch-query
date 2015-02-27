@@ -245,12 +245,19 @@ describe('Service: luceneQueryFactory', function () {
     });
   });
   describe('a query that match one of multiple key value pairs (eitherOr query)', function() {
-    beforeEach(function() {
+    it ('generates the expected expression with simple fields', function() {
       query.searchFieldEitherOr('createdBy', {'contact_createdby_username': 'username', 'contact_createdby': 'name' });
-    });
-    it ('generates the expected expression', function() {
       expect(query.getSearchExpression())
         .toBe('(contact_createdby_username:username OR contact_createdby:name)');
+    });
+    it ('generates the expected expression with multiple fields', function() {
+      var users = ['user1', 'user2'];
+      query.searchFieldEitherOr('createdBy', {
+        'contact_createdby_username': users,
+        'contact_createdby': users
+      });
+      expect(query.getSearchExpression())
+        .toBe('(contact_createdby_username:(user1 OR user2) OR contact_createdby:(user1 OR user2))');
     });
     it('allows to clear the field', function(){
       query.searchFieldEitherOr('createdBy', {});
@@ -259,14 +266,14 @@ describe('Service: luceneQueryFactory', function () {
   });
   describe('a query on a field with multiple values', function(){
     beforeEach(function(){
-      query.searchFieldMultiple('status', ['new', 'in progress']);
+      query.searchField('status', ['new', 'in progress']);
     });
     it('generates the expected expression', function(){
       expect(query.getSearchExpression())
         .toBe('status:(new OR in progress)');
     });
     it('can reset the field', function(){
-      query.searchFieldMultiple('status', []);
+      query.searchField('status', []);
       expect(query.getSearchExpression()).toBe('');
     });
   });
