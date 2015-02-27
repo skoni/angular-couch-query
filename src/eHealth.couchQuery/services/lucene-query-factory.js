@@ -116,7 +116,9 @@ angular
               // request, together with the direction
               if (options.sortField) {
                 var direction = initialParams.descending ? '\\' : '/';
-                initialParams.sort = direction+options.sortField;
+                initialParams.sort = angular.isArray(options.sortField) ?
+                  direction+options.sortField.join(','+direction) :
+                  direction+options.sortField;
                 delete initialParams.descending;
               }
               return requestPaginatorFactory(function(params) {
