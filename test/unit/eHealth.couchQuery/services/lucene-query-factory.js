@@ -184,7 +184,7 @@ describe('Service: luceneQueryFactory', function () {
     });
     describe('for text searches', function(){
       beforeEach(function(){
-      query.searchField('name', 'Jonny');
+        query.searchField('name', 'Jonny');
       });
       it('uses Lucene sorting', function(){
         query.run({ descending:true });
@@ -208,6 +208,20 @@ describe('Service: luceneQueryFactory', function () {
             limit : 20,
             skip : 0,
             stale : 'ok'
+          });
+      });
+      it('can sort by several fields', function() {
+        query = luceneQueryFactory.create({ sortField:['date', 'name']});
+        query.searchField('name', 'Jonny');
+        query.run();
+        expect($http.get.mostRecentCall.args[1].params)
+          .toEqual({
+            include_docs : true,
+            q : 'name:Jonny',
+            stale: 'ok',
+            sort : '/date,/name',
+            limit : 20,
+            skip : 0
           });
       });
     });
