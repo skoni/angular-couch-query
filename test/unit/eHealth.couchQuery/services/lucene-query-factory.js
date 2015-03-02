@@ -50,6 +50,7 @@ describe('Service: luceneQueryFactory', function () {
            .getSearchExpression())
       .toBe('e');
   });
+
   describe('an empty query', function() {
     beforeEach(function() {
       query = luceneQueryFactory.create();
@@ -289,6 +290,18 @@ describe('Service: luceneQueryFactory', function () {
     it('can reset the field', function(){
       query.searchField('status', []);
       expect(query.getSearchExpression()).toBe('');
+    });
+  });
+  describe('a query with paginator options', function() {
+    it('passes the options on to the view paginator', function(){
+      query = luceneQueryFactory.create({});
+      query.run(null, {pageSize: 2});
+      expect($http.get.mostRecentCall.args[1].params.limit).toEqual(2);
+    });
+    it('passes the options on to the index paginator', function(){
+      query = luceneQueryFactory.create({}).searchFree('free');
+      query.run(null, {pageSize: 2});
+      expect($http.get.mostRecentCall.args[1].params.limit).toEqual(2);
     });
   });
 });
