@@ -261,9 +261,12 @@ describe('Service: luceneQueryFactory', function () {
   });
   describe('a query that match one of multiple key value pairs (eitherOr query)', function() {
     it ('generates the expected expression with simple fields', function() {
-      query.searchFieldEitherOr('createdBy', {'contact_createdby_username': 'username', 'contact_createdby': 'name' });
+      query.searchFieldEitherOr('createdBy', {
+        'contact_createdby_username': 'username',
+        'contact_createdby': 'name',
+        'createdby': 'username'});
       expect(query.getSearchExpression())
-        .toBe('(contact_createdby_username:username OR contact_createdby:name)');
+        .toBe('(contact_createdby_username:username OR contact_createdby:name OR createdby:username)');
     });
     it ('generates the expected expression with multiple fields', function() {
       var users = ['user1', 'user2'];
@@ -273,6 +276,13 @@ describe('Service: luceneQueryFactory', function () {
       });
       expect(query.getSearchExpression())
         .toBe('(contact_createdby_username:(user1 OR user2) OR contact_createdby:(user1 OR user2))');
+    });
+    it('doesn\'t add a search field when the value is undefined', function() {
+      query.searchFieldEitherOr('createdBy', {
+        'contact_createdby_username': undefined,
+        'createdby': 'username'});
+      expect(query.getSearchExpression())
+        .toBe('(createdby:username)');
     });
     it('allows to clear the field', function(){
       query.searchFieldEitherOr('createdBy', {});
