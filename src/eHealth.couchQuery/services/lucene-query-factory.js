@@ -65,7 +65,9 @@ angular
           getSearchExpression: function() {
             var terms = Object.keys(fields).map(function (key) {
               function addLabel(key, value) {
-                value = value || fields[key].value;
+                if (angular.isUndefined(value)) {
+                  value = fields[key].value;
+                }
                 var queryValue = angular.isArray(value) ?
                   '(' + value.map(foldToAscii).join(' OR ') + ')' :
                   foldToAscii(value);
@@ -74,7 +76,9 @@ angular
               if (fields[key].type === 'not') {
                 return 'NOT '+addLabel(key);
               } else if (fields[key].type === 'eitherOr') {
-                var labeled = Object.keys(fields[key].value).map(function(k) {
+                var labeled = Object.keys(fields[key].value).filter(function(k) {
+                  return angular.isDefined(fields[key].value[k]);
+                }).map(function(k) {
                   return addLabel(k, fields[key].value[k]);
                 });
                 return labeled.length ? '(' + labeled.join(' OR ') + ')' : '';

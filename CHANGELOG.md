@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this
 file. File structured according to <http://keepachangelog.com/>
 
+## 0.7.1 - 02-03-15
+- fix: eitherOr query fails with undefined values
+
 ## 0.7.0 - 27-02.15
 - add ability to pass paginator options through query-factory
 
