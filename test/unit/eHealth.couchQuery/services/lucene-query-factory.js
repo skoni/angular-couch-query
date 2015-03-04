@@ -284,6 +284,12 @@ describe('Service: luceneQueryFactory', function () {
       expect(query.getSearchExpression())
         .toBe('(createdby:username)');
     });
+    it('resets the field when all values are undefined or []', function() {
+      query.searchFieldEitherOr('createdBy', {
+        'contact_createdby_username': undefined,
+        'createdby': []});
+      expect(query.getSearchExpression()).toBe('');
+    });
     it('allows to clear the field', function(){
       query.searchFieldEitherOr('createdBy', {});
       expect(query.getSearchExpression()).toBe('');
