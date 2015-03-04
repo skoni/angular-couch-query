@@ -2165,7 +2165,10 @@ angular
                 return 'NOT '+addLabel(key);
               } else if (fields[key].type === 'eitherOr') {
                 var labeled = Object.keys(fields[key].value).filter(function(k) {
-                  return angular.isDefined(fields[key].value[k]);
+                  // Filter undefined and empty array values
+                  var val = fields[key].value[k];
+                  return angular.isDefined(val) &&
+                         (!angular.isArray(val) || val.length > 0);
                 }).map(function(k) {
                   return addLabel(k, fields[key].value[k]);
                 });
