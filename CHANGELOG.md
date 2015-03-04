@@ -3,8 +3,7 @@
 All notable changes to this project will be documented in this
 file. File structured according to <http://keepachangelog.com/>
 
-Unreleased
-----------
+## 0.7.2 - 04-03-15
 - fix: eitherOr query fails with empty array values
 
 ## 0.7.1 - 02-03-15
