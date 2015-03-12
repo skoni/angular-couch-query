@@ -10,14 +10,22 @@ angular
     this.$get = ['lodash', '$q', function(lodash, $q) {
       function updateResult(response, skip, size, result, transform, options) {
         transform = transform || function (i) { return i; }; // identity
-        var rows;
-        if (options.unique) {
-          rows = lodash.uniq(response.rows, function(e){ return e.id; });
-        } else {
+        var rows, totalRows = 0;
+        if (response.rows) {
+          // response from couchdb
           rows = response.rows;
+          totalRows = response.total_rows;
+        }
+        else if (response.hits) {
+          // response from elasticsearch
+          rows = response.hits.hits.map(function(hit) { return hit._source; });
+          totalRows = response.hits.total;
+        }
+        if (options.unique) {
+          rows = lodash.uniq(rows, function(row){ return row.id || row._id; });
         }
         result.rows = rows.map(transform);
-        result.totalRows = response.total_rows;
+        result.totalRows = totalRows;
         result.firstIndex = skip;
         result.lastIndex = result.firstIndex + result.rows.length - 1;
         result.hasPrevious = (skip > 0);
@@ -36,8 +44,14 @@ angular
           hasNext: false,
           update: function() {
             var skip = page * size;
-            params.limit = size;
-            params.skip = skip;
+            if (options.searchEngine === 'elasticsearch') {
+              params.size = size;
+              params.from = skip;
+            }
+            else {
+              params.limit = size;
+              params.skip = skip;
+            }
             return query(params)
               .then(function(response) {
                 return updateResult(

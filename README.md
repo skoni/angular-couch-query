@@ -1,6 +1,6 @@
 # Angular Couch Query
 [![Build Status](https://travis-ci.org/eHealthAfrica/angular-couch-query.svg?branch=master)](https://travis-ci.org/eHealthAfrica/angular-couch-query)
-> Navigate results of Couch views and Lucene queries easily
+> Navigate results of CouchDB views, CouchDB-Lucene and Elasticsearch queries easily
 
 This module requires [ngLodash](https://github.com/rockabox/ng-lodash)
 as a dependency, thus please add it to your app following its

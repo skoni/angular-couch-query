@@ -14,9 +14,81 @@ angular
     this.$get = ['$http', 'requestPaginatorFactory', 'foldToAscii', function($http, requestPaginatorFactory, foldToAscii) {
       function create(options) {
         options = options || {};
-        var fields = {},
-            free = false,
-            fineGrainFields = options.fineGrainFields || {};
+        var fields = {};
+        var free = false;
+        var fineGrainFields = options.fineGrainFields || {};
+
+        var engines = {
+          runCouchDB: function(initialParams, initialOptions, q, config) {
+            angular.extend(initialParams, {
+              include_docs: true
+            });
+            initialOptions.type = 'couchdb';
+            return requestPaginatorFactory(function(params) {
+              config.params = params;
+              return $http
+                .get(db+'/_design/frontend/_view/by_contact_createdon', config)
+                .then(function(response) {
+                  return response.data;
+                });
+            }, initialParams, initialOptions);
+          },
+          runCouchDBLucene: function(initialParams, initialOptions, q, config) {
+            angular.extend(initialParams, {
+              q: q,
+              include_docs: true
+            });
+            angular.extend(initialOptions, {
+              unique: true
+            });
+            // when a new index is being calculated by couch-lucene,
+            // all other indexes are blocked and return 500! accepting
+            // stale results allows the application to work
+            // continuously
+            initialParams.stale = 'ok';
+            if (options.sortField) {
+              var direction = initialParams.descending ? '\\' : '/';
+              initialParams.sort = angular.isArray(options.sortField) ?
+                direction+options.sortField.join(',' + direction) :
+                direction+options.sortField;
+              delete initialParams.descending;
+            }
+            return requestPaginatorFactory(function(params) {
+              config.params = params;
+              return $http
+                .get(db+'/_fti/_design/'+searchDocument, config)
+                .then(function(response) {
+                  return response.data;
+                });
+            }, initialParams, initialOptions);
+          },
+          runElasticsearch: function(initialParams, initialOptions, q, config) {
+            angular.extend(initialParams, {
+              q: q
+            });
+            angular.extend(initialOptions, {
+              unique: true
+            });
+            if (options.sortField) {
+              var direction = initialParams.descending ? 'desc' : 'asc';
+              initialParams.sort = angular.isArray(options.sortField) ?
+                options.sortField.join(':' + direction + ',') + ':' + direction :
+                options.sortField + ':' + direction;
+              delete initialParams.descending;
+            }
+            return requestPaginatorFactory(function(params) {
+              config.params = params;
+              // TODO: set correct URL with DB when we have a setup
+              //       where couchdb proxies elasticsearch
+              return $http
+                .get(searchDocument, config)
+                .then(function(response) {
+                  return response.data;
+                });
+            }, initialParams, initialOptions);
+          }
+        };
+
         var query = {
           searchField: function(key, value) {
             fields[key] = {
@@ -31,7 +103,7 @@ angular
             if (Object.keys(value).length) {
               fields[key] = {
                 type: 'eitherOr',
-                value: value
+                value: value,
               };
             } else {
               delete fields[key];
@@ -42,11 +114,23 @@ angular
             function isNotValue(candidate) { return candidate !== value; }
             if (key in fineGrainFields) {
               fields[key] = {
-                value: fineGrainFields[key].filter(isNotValue)
+                value: fineGrainFields[key].filter(isNotValue),
               };
             } else {
               query.searchField(key, value);
               fields[key].type = 'not';
+            }
+            return query;
+          },
+          rangeField: function(key, from, to) {
+            if (from && to) {
+              fields[key] = {
+                type: 'range',
+                from: from,
+                to: to
+              };
+            } else {
+              delete fields[key];
             }
             return query;
           },
@@ -64,28 +148,43 @@ angular
           },
           getSearchExpression: function() {
             var terms = Object.keys(fields).map(function (key) {
+              var field = fields[key];
+
               function addLabel(key, value) {
                 if (angular.isUndefined(value)) {
-                  value = fields[key].value;
+                  value = field.value;
                 }
-                var queryValue = angular.isArray(value) ?
-                  '(' + value.map(foldToAscii).join(' OR ') + ')' :
-                  foldToAscii(value);
-                return key+':'+queryValue;
+                var queryValue;
+                if (angular.isArray(value)) {
+                  queryValue = '(' + value.map(foldToAscii).map(function(v) {
+                    return '"' + v + '"';
+                  }).join(' OR ') + ')';
+                }
+                else {
+                  queryValue = '"' + foldToAscii(value) + '"';
+                }
+                return key + ':' + queryValue;
               }
-              if (fields[key].type === 'not') {
-                return 'NOT '+addLabel(key);
-              } else if (fields[key].type === 'eitherOr') {
-                var labeled = Object.keys(fields[key].value).filter(function(k) {
+
+              switch(field.type) {
+              case 'not':
+                return 'NOT ' + addLabel(key);
+
+              case 'eitherOr':
+                var labeled = Object.keys(field.value).filter(function(k) {
                   // Filter undefined and empty array values
-                  var val = fields[key].value[k];
+                  var val = field.value[k];
                   return angular.isDefined(val) &&
                          (!angular.isArray(val) || val.length > 0);
                 }).map(function(k) {
-                  return addLabel(k, fields[key].value[k]);
+                  return addLabel(k, field.value[k]);
                 });
                 return labeled.length ? '(' + labeled.join(' OR ') + ')' : '';
-              } else {
+
+              case 'range':
+                return key + ':[' + field.from + ' TO ' + field.to + ']';
+
+              default:
                 return addLabel(key);
               }
             });
@@ -98,48 +197,21 @@ angular
             initialParams = initialParams || {};
             initialOptions = initialOptions || {};
             var q = query.getSearchExpression();
-            angular.extend(initialParams, {
-              include_docs: true
-            });
             var config = {
               withCredentials: true
             };
             if (q === '') {
-              return requestPaginatorFactory(function(params) {
-                config.params = params;
-                return $http
-                  .get(db+'/_design/frontend/_view/by_contact_createdon', config)
-                  .then(function(response) {
-                    return response.data;
-                  });
-              }, initialParams, initialOptions);
-            } else {
-              initialParams.q = q;
-              initialOptions = angular.extend({
-                unique: true
-              }, initialOptions);
-              // when a new index is being calculated by couch-lucene,
-              // all other indexes are blocked and return 500! accepting
-              // stale results allows the application to work
-              // continuously
-              initialParams.stale = 'ok';
-              // with Lucene, we specify the search field in the
-              // request, together with the direction
-              if (options.sortField) {
-                var direction = initialParams.descending ? '\\' : '/';
-                initialParams.sort = angular.isArray(options.sortField) ?
-                  direction+options.sortField.join(','+direction) :
-                  direction+options.sortField;
-                delete initialParams.descending;
+              initialOptions.searchEngine = 'couchdb';
+              return engines.runCouchDB(initialParams, initialOptions, q, config);
+            }
+            else {
+              initialOptions.searchEngine = options.searchEngine || 'couchdb-lucene';
+              if (initialOptions.searchEngine === 'couchdb-lucene') {
+                return engines.runCouchDBLucene(initialParams, initialOptions, q, config);
               }
-              return requestPaginatorFactory(function(params) {
-                config.params = params;
-                return $http
-                  .get(db+'/_fti/_design/'+searchDocument, config)
-                  .then(function(response) {
-                    return response.data;
-                  });
-              }, initialParams, initialOptions);
+              else if (initialOptions.searchEngine === 'elasticsearch') {
+                return engines.runElasticsearch(initialParams, initialOptions, q, config);
+              }
             }
           }
         };
